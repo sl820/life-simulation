@@ -1,36 +1,346 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 人生推演引擎
 
-## Getting Started
+**一个基于 A2A 网络的「人生模拟器」—— 让你的 Agent 分身，在虚拟世界里活一万次。**
 
-First, run the development server:
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
+[![A2A](https://img.shields.io/badge/A2A-Protocol-blue)](https://second.me/)
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-black)](https://vercel.com)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 一句话定位
+
+人生推演引擎 = **让你的 Agent 和其他 Agent（A2A）自主交互**，在虚拟世界里体验不同人生选择的「人生模拟器」。
+
+> 现实中你只能活一次，但在推演引擎里，你的 Agent 可以活一万次。
+
+---
+
+## 🎯 核心亮点
+
+### 什么是 A2A？
+
+A2A = Agent to Agent。不同于传统 AI 助手（一问一答），A2A 让 Agent 与 Agent 直接对话、协作、碰撞。
+
+| 传统方式 | A2A 方式 |
+|---------|---------|
+| 你问 AI "马斯克会说啥" | 你的 Agent 和马斯克 Agent 真的在聊天 |
+| AI 生成一段文字 | 两个 Agent 自主交互，产生意外对话 |
+| 你旁观 | 你的 Agent 在"成长" |
+
+### 核心特色
+
+1. **你的 Agent 是主角** - 基于你的记忆、性格、价值观打造的分身
+2. **Agent 自主交互** - 不是预设脚本，是真正的 A2A 对话
+3. **随时回档** - 关键决策点可以存档、重来
+4. **人生图谱** - 可视化所有分支路径
+5. **知乎结合** - 热榜、可信搜、社区传播
+
+---
+
+## 🚀 功能特性
+
+### 场景模式
+
+| 场景 | 描述 | A2A 交互 |
+|------|------|---------|
+| 🎓 高考志愿 | 回到18岁，重新选大学和专业 | 遇到学长/导师 Agent |
+| 💼 职业选择 | 大厂？创业？考公？ | 遇到老板/同事/竞争对手 Agent |
+| 🚀 创业之路 | 体验创业的起起落落 | 遇到投资人/合伙人 Agent |
+| 💬 思想碰撞 | 和历史人物深度对话 | 与苏格拉底/孔子/马斯克 Agent 辩论 |
+| 🔮 跨时空对话 | 和未来的自己聊聊 | 与"未来的自己" Agent 对话 |
+| 🌍 平行人生 | 和其他用户 Agent 一起体验 | 社交、组队、竞争 |
+
+### 核心机制
+
+```
+【选择场景】 → 【配置分身】 → 【开始推演】
+                                              ↓
+                                    ┌─────────────────┐
+                                    │  A2A 交互       │
+                                    │ (自主对话)      │
+                                    └─────────────────┘
+                                              ↓
+【查看报告】 ← 【做出选择】 ← 【遇到事件】
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **时间线引擎** - 可配置速度（1小时 = 1年/5年/更快）
+- **决策点** - 关键选择（手动 or AI 自主）
+- **分支系统** - 每个选择产生新分支
+- **回档机制** - 最多5次，尝试不同可能
+- **分析报告** - 交互式可视化 + AI 洞察
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠 技术架构
 
-## Learn More
+### 技术栈
 
-To learn more about Next.js, take a look at the following resources:
+| 层级 | 技术选型 |
+|------|---------|
+| 前端 | Next.js 16 · React 19 · TypeScript · Tailwind CSS |
+| 后端 | Next.js API Routes |
+| 数据库 | Supabase (PostgreSQL) |
+| 图数据库 | Neo4j |
+| 向量数据库 | Chroma |
+| 认证 | NextAuth.js + Second Me OAuth |
+| LLM | DeepSeek / Claude |
+| 部署 | Vercel |
+| 协议 | A2A · MCP |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 架构图
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      用户交互层                              │
+│         Web端  ·  小程序  ·  Second Me 内嵌                 │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      API 网关层                             │
+│        /api/auth/*  ·  /api/simulation/*  ·  /api/a2a/*   │
+└─────────────────────────────────────────────────────────────┘
+                              │
+          ┌───────────────────┼───────────────────┐
+          ▼                   ▼                   ▼
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│   身份服务       │ │   时间线服务    │ │   A2A 服务      │
+│   IdentitySvc   │ │   TimelineSvc   │ │   A2AService    │
+└─────────────────┘ └─────────────────┘ └─────────────────┘
+          │                   │                   │
+          └───────────────────┼───────────────────┘
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      外部集成层                             │
+│     Second Me Platform  ·  知乎 API  ·  LLM 服务          │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      数据存储层                             │
+│      PostgreSQL  ·  Neo4j  ·  Chroma                      │
+└─────────────────────────────────────────────────────────────┘
+```
 
-## Deploy on Vercel
+### API 设计
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```typescript
+// MCP 工具定义
+const tools = [
+  {
+    name: "start_life_simulation",
+    description: "启动人生推演引擎",
+    input: { scene_id: string, time_speed: number }
+  },
+  {
+    name: "consult_historical_figure",
+    description: "与历史人物 Agent 进行 A2A 对话",
+    input: { figure_id: string, topic: string }
+  },
+  {
+    name: "make_decision",
+    description: "在决策点做出选择",
+    input: { decision_id: string, choice: string, mode: "manual" | "ai_auto" }
+  },
+  {
+    name: "rollback_to_checkpoint",
+    description: "回档到指定存档点",
+    input: { checkpoint_id: string }
+  },
+  {
+    name: "get_analysis_report",
+    description: "获取分析报告",
+    input: { simulation_id: string, format: "interactive" | "summary" }
+  }
+];
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 📖 玩法流程
+
+### Step 1: 选择场景
+
+```
+┌────────────────────────────────────┐
+│         选择推演场景                 │
+├────────────────────────────────────┤
+│  🎓 高考志愿   💼 职业选择         │
+│  🚀 创业之路   💬 思想碰撞         │
+│  🔮 跨时空对话  🌍 平行人生         │
+└────────────────────────────────────┘
+```
+
+### Step 2: 配置分身
+
+- 绑定 Second Me 账号
+- 自动同步记忆和性格
+- 可调整决策模式（手动/AI自主）
+
+### Step 3: 开始推演
+
+- 设置时间速度
+- Agent 自主推进时间线
+- 遇到事件和 A2A 交互
+
+### Step 4: 做出选择
+
+- 关键决策点暂停
+- 显示选项和预测结果
+- 你来选 or 让 Agent 选
+
+### Step 5: 查看结果
+
+- 交互式分析报告
+- 人生图谱可视化
+- AI 洞察和建议
+
+---
+
+## 🎮 人生阶段设计
+
+| 阶段 | 年龄 | 关键决策 |
+|------|------|---------|
+| 启蒙期 | 0-18岁 | 兴趣培养、升学选择 |
+| 高等教育 | 18-25岁 | 高考志愿、毕业去向 ⭐ |
+| 职业发展 | 25-35岁 | 跳槽、转行、创业 ⭐ |
+| 稳定转型 | 35-50岁 | 职业天花板、家庭平衡 |
+| 传承退休 | 50-65岁 | 退休生活、遗产传承 |
+
+---
+
+## 📊 交互式分析报告
+
+推演结束后，你会得到：
+
+```json
+{
+  "基础数据": {
+    "场景": "高考志愿",
+    "时长": "45分钟",
+    "分支数": 3,
+    "A2A交互": 12次
+  },
+  "洞察": [
+    "你做重大决策时，容易受到他人影响",
+    "你的风险承受度在 A2A 交互后提升了 15%",
+    "与马斯克 Agent 的对话影响了你的职业选择"
+  ],
+  "建议": {
+    "短期": "可以尝试有挑战性的选择",
+    "中期": "建议与不同背景的人多交流",
+    "长期": "最终会回归稳定，但早期多尝试更清楚自己要什么"
+  }
+}
+```
+
+---
+
+## 🤝 A2A 交互示例
+
+```
+【系统】你的 Agent "小明" 在大学里遇到了"马斯克 Agent"...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[小明的 Agent] → [马斯克的 Agent]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+小明：你好，我正在读大三，对创业很感兴趣。
+
+马斯克：很好。你现在有什么具体想法？
+
+小明：我想做 AI 产品，但不确定要不要休学。
+
+马斯克：这是个经典问题。
+关键是你有没有足够强的"为什么"？
+如果没有，安心读书。如果有，就去做。
+
+小明：我的"为什么"是...
+
+马斯克：让我告诉你，我当年是怎么想的...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【系统】对话持续进行中，你的 Agent 正在学习...
+```
+
+---
+
+## 🚀 快速开始
+
+### 本地开发
+
+```bash
+# 克隆项目
+git clone https://github.com/sl820/life-simulation.git
+cd life-simulation
+
+# 安装依赖
+npm install
+
+# 配置环境变量
+cp .env.local.example .env.local
+# 编辑 .env.local，填入：
+# SECONDME_CLIENT_ID=xxx
+# SECONDME_CLIENT_SECRET=xxx
+
+# 启动开发服务器
+npm run dev
+```
+
+### 部署到 Vercel
+
+1. 访问 [Vercel](https://vercel.com/new)
+2. Import GitHub 仓库
+3. 添加环境变量
+4. Deploy
+
+---
+
+## 📦 项目结构
+
+```
+life-simulation/
+├── app/                    # Next.js App Router
+│   ├── api/               # API 路由
+│   │   ├── auth/         # 认证
+│   │   ├── simulation/   # 推演
+│   │   ├── a2a/         # A2A 交互
+│   │   └── scenes/      # 场景管理
+│   ├── simulation/       # 推演页面
+│   └── report/          # 报告页面
+├── components/            # React 组件
+├── lib/                  # 核心逻辑
+│   ├── simulation/      # 时间线引擎
+│   ├── a2a/             # A2A 服务
+│   ├── scenes/          # 场景配置
+│   └── analysis/        # 分析报告
+├── prisma/              # 数据库模型
+└── public/              # 静态资源
+```
+
+---
+
+## 🧪 后续规划
+
+- [ ] Second Me OAuth 集成
+- [ ] 基础时间线引擎
+- [ ] A2A 消息路由
+- [ ] 场景模板扩展
+- [ ] 存档/回档功能
+- [ ] 交互式分析报告
+- [ ] 人生图谱可视化
+- [ ] 知乎 API 接入
+
+---
+
+## 📄 许可证
+
+MIT License
+
+---
+
+## 🦞 关于
+
+基于 [Second Me](https://second.me/) A2A 平台构建。
