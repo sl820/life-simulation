@@ -1,0 +1,245 @@
+// Database Schema for Supabase/PostgreSQL
+
+// Users table - synced from SecondMe
+model users {
+  id              String    @id @default(cuid()) // local ID
+  secondme_id     String?   @unique // SecondMe user ID
+  origin_route    String?   @unique // SecondMe homepage route
+  name            String
+  avatar          String?
+  about_me        String?
+  homepage        String?
+
+  // Auth tokens (encrypted in production)
+  access_token    String?
+  refresh_token   String?
+  token_expires_at DateTime?
+
+  // Relations
+  simulations     simulations[]
+  checkpoints     checkpoints[]
+
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+}
+
+// Simulations table
+model simulations {
+  id              String    @id @default(cuid())
+  user_id         String    // references users.id
+  scene_id        String
+
+  // Status
+  status          String    @default("draft") // draft, running, paused, completed, abandoned
+
+  // Time config
+  start_date      DateTime
+  end_date        DateTime?
+  speed           Int       @default(365) // days per real minute
+  granularity     String    @default("year") // year, month, week
+
+  // Current state (JSON)
+  state_json      Json?     // SimulationState serialized
+
+  // Stats
+  event_count     Int       @default(0)
+  decision_count  Int       @default(0)
+  branch_count    Int       @default(1)
+  checkpoint_count Int      @default(0)
+
+  // Relations
+  user            users     @relation(fields: [user_id], references: [id])
+  branches        branches[]
+  checkpoints      checkpoints[]
+  timeline_events  timeline_events[]
+  decisions       decisions[]
+
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  @@index([user_id])
+  @@index([scene_id])
+  @@index([status])
+}
+
+// Branches table
+model branches {
+  id              String    @id @default(cuid())
+  simulation_id   String
+  parent_branch_id String?   // for branching
+
+  decision_point_id String?  // which decision created this branch
+  path             String[]  // array of event IDs
+  status           String    @default("active") // active, completed, abandoned
+
+  // Final stats
+  final_character   Float?
+  final_wealth      Float?
+  final_health      Float?
+  final_happiness   Float?
+
+  // Relations
+  simulation      simulations @relation(fields: [simulation_id], references: [id])
+  events          timeline_events[]
+
+  created_at      DateTime  @default(now())
+
+  @@index([simulation_id])
+}
+
+// Timeline events table
+model timeline_events {
+  id              String    @id @default(cuid())
+  simulation_id   String
+  branch_id       String
+
+  epoch_id        String?
+  virtual_date    DateTime
+  sequence        Int
+
+  type            String    // narrative, encounter, challenge, opportunity, milestone, a2a
+  title           String
+  description     String
+
+  // Impact
+  impact_json     Json?     // EventImpact serialized
+
+  // A2A data
+  a2a_conversation_id String?
+  a2a_participant_ids  String[]?
+  a2a_summary          String?
+
+  source          String    // system, user, ai, historical_agent
+
+  // Relations
+  simulation      simulations @relation(fields: [simulation_id], references: [id])
+  branch          branches   @relation(fields: [branch_id], references: [id])
+
+  created_at      DateTime  @default(now())
+
+  @@index([simulation_id])
+  @@index([branch_id])
+  @@index([virtual_date])
+}
+
+// Decisions table
+model decisions {
+  id              String    @id @default(cuid())
+  simulation_id   String
+  branch_id       String
+
+  event_id        String?   // associated event
+  virtual_date    DateTime
+  question        String
+  context         String
+
+  options_json    Json      // DecisionOption[] serialized
+
+  chosen_option_id String?
+  chosen_at        DateTime?
+
+  outcome_json    Json?     // DecisionOutcome serialized
+
+  // Relations
+  simulation      simulations @relation(fields: [simulation_id], references: [id])
+
+  created_at      DateTime  @default(now())
+
+  @@index([simulation_id])
+  @@index([branch_id])
+}
+
+// Checkpoints table
+model checkpoints {
+  id              String    @id @default(cuid())
+  simulation_id   String
+  branch_id       String
+  user_id         String
+
+  name            String
+  description     String?
+
+  // Full snapshot
+  snapshot_json   Json      // CheckpointSnapshot serialized
+
+  // Relations
+  simulation      simulations @relation(fields: [simulation_id], references: [id])
+  user            users     @relation(fields: [user_id], references: [id])
+
+  created_at      DateTime  @default(now())
+
+  @@index([simulation_id])
+  @@index([user_id])
+}
+
+// A2A Conversations table
+model a2a_conversations {
+  id              String    @id @default(cuid())
+  simulation_id   String?
+
+  participants    String[]  // array of agent IDs
+  message_count   Int       @default(0)
+
+  last_message_at DateTime?
+  last_message_preview String?
+
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  @@index([simulation_id])
+}
+
+// A2A Messages table
+model a2a_messages {
+  id              String    @id @default(cuid())
+  conversation_id String
+
+  type            String    // request, response, event
+  from_agent_id   String
+  to_agent_id     String
+
+  content_json    Json      // A2AContent serialized
+
+  timestamp       DateTime
+
+  // Relations
+  conversation    a2a_conversations @relation(fields: [conversation_id], references: [id])
+
+  created_at      DateTime  @default(now())
+
+  @@index([conversation_id])
+  @@index([from_agent_id])
+  @@index([to_agent_id])
+}
+
+// Historical figures (cached)
+model historical_figures {
+  id              String    @id
+  name            String
+  name_zh         String?
+  name_en         String?
+
+  era             String?   // 春秋, 现代, etc.
+  region          String?   // 中国, 欧洲, etc.
+  profession      String?   // 哲学家, 政治家, etc.
+
+  // Knowledge
+  biography       String?   // 生平概述
+  core_thoughts   String[]  // 核心思想
+  major_works     String[]  // 代表作品
+  quotes          String[]  // 名言警句
+
+  // Prompt template
+  prompt_template String?
+
+  // Personality (for simulation)
+  personality_json Json?
+
+  // Status
+  status          String    @default("active") // draft, testing, active, deprecated
+
+  version         String    @default("1.0")
+
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+}
