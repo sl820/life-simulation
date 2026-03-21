@@ -1,17 +1,7 @@
 import { cookies } from 'next/headers';
 import { AUTH_COOKIES } from '@/lib/auth';
-import AgentList from '@/components/AgentList';
-import A2AChat from '@/components/A2AChat';
+import SceneSelector from '@/components/SceneSelector';
 import Link from 'next/link';
-
-interface Agent {
-  id: string;
-  name: string;
-  avatar?: string;
-  type: 'user' | 'historical' | 'system';
-  aboutMe?: string;
-  status: string;
-}
 
 interface UserProfile {
   name: string;
@@ -56,7 +46,7 @@ export default async function SimulationPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-800">
       {/* Header */}
-      <header className="border-b border-zinc-200 bg-white/80 px-4 py-4 backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-900/80">
+      <header className="sticky top-0 z-50 border-b border-zinc-200 bg-white/80 px-4 py-4 backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-900/80">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/" className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
@@ -81,50 +71,91 @@ export default async function SimulationPage() {
       </header>
 
       {/* Main Content */}
-      <main className="mx-auto max-w-6xl px-4 py-8">
-        {/* Intro */}
-        <div className="mb-8 rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800/50">
-          <h2 className="mb-2 text-xl font-bold text-zinc-900 dark:text-zinc-100">🎭 选择你的 A2A 交互对象</h2>
+      <main className="mx-auto max-w-6xl px-4 py-8 pb-32">
+        {/* Page Title */}
+        <div className="mb-8">
+          <h1 className="mb-2 text-3xl font-bold text-zinc-900 dark:text-zinc-100">选择推演场景</h1>
           <p className="text-zinc-600 dark:text-zinc-400">
-            在这里，你可以与历史人物Agent对话，也可以与其他用户的Agent分身交流。选择一位开始你的推演之旅。
+            选择一个人生场景，让你的 Agent 分身开始推演。每条路都有不同的风景。
           </p>
         </div>
 
-        {/* Agent List */}
-        <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800/50">
-          <h3 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-            可用 Agent（{'>'}= 4）
-          </h3>
-          <AgentList
-            onSelectAgent={(agent) => {
-              // Handle agent selection - in a real app, this would open a modal or navigate
-              console.log('Selected agent:', agent);
-            }}
-          />
-        </div>
+        {/* Scene Selector */}
+        <SceneSelector />
 
         {/* How it works */}
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
+        <div className="mt-16 grid gap-6 md:grid-cols-3">
           <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800/50">
-            <div className="mb-4 text-3xl">📚</div>
-            <h3 className="mb-2 font-semibold text-zinc-900 dark:text-zinc-100">与历史人物对话</h3>
+            <div className="mb-4 text-3xl">🎯</div>
+            <h3 className="mb-2 font-semibold text-zinc-900 dark:text-zinc-100">选择场景</h3>
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              选择孔子、苏格拉底、马斯克等历史人物，与他们进行深度对话，获得不同视角的人生洞察。
+              从高考志愿到职业选择，从创业之路到思想碰撞。选择你想体验的人生阶段。
             </p>
           </div>
           <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800/50">
-            <div className="mb-4 text-3xl">🤝</div>
-            <h3 className="mb-2 font-semibold text-zinc-900 dark:text-zinc-100">与其他用户交互</h3>
+            <div className="mb-4 text-3xl">🤖</div>
+            <h3 className="mb-2 font-semibold text-zinc-900 dark:text-zinc-100">AI 自主推演</h3>
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              与其他用户的Agent分身进行A2A交流，体验不同人生选择带来的不同结果。
+              你的 Agent 分身会与历史人物、其他用户 Agent 自主交互，产生意外对话。
             </p>
           </div>
           <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800/50">
-            <div className="mb-4 text-3xl">⏪</div>
-            <h3 className="mb-2 font-semibold text-zinc-900 dark:text-zinc-100">随时回档重试</h3>
+            <div className="mb-4 text-3xl">📊</div>
+            <h3 className="mb-2 font-semibold text-zinc-900 dark:text-zinc-100">获得洞察</h3>
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              在关键决策点存档，尝试不同选择，对比不同人生路径的结果。
+              推演结束后，你会获得一份详细的人生洞察报告，了解你的决策模式和成长轨迹。
             </p>
+          </div>
+        </div>
+
+        {/* Feature Highlights */}
+        <div className="mt-16 rounded-2xl border border-zinc-200 bg-gradient-to-r from-blue-50 to-purple-50 p-8 dark:border-zinc-700 dark:from-blue-900/20 dark:to-purple-900/20">
+          <h2 className="mb-6 text-xl font-bold text-zinc-900 dark:text-zinc-100">🎭 A2A 核心特色</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="flex gap-3">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
+                1
+              </span>
+              <div>
+                <h4 className="font-medium text-zinc-900 dark:text-zinc-100">Agent 自主交互</h4>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                  不是预设脚本，是真正的 A2A 对话，你的 Agent 会自主学习和成长
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
+                2
+              </span>
+              <div>
+                <h4 className="font-medium text-zinc-900 dark:text-zinc-100">随时回档重试</h4>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                  关键决策点可以存档，尝试不同选择，体验平行人生
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
+                3
+              </span>
+              <div>
+                <h4 className="font-medium text-zinc-900 dark:text-zinc-100">人生图谱可视化</h4>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                  可视化所有分支路径，直观展示不同选择的人生轨迹
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
+                4
+              </span>
+              <div>
+                <h4 className="font-medium text-zinc-900 dark:text-zinc-100">历史人物对话</h4>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                  与孔子、苏格拉底、马斯克等历史人物 Agent 深度对话
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </main>

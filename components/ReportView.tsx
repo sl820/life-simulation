@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { AnalysisReport } from '@/lib/analysis/types';
+import LifeGraph from './LifeGraph';
 
 interface ReportViewProps {
   report: AnalysisReport;
@@ -10,6 +11,7 @@ interface ReportViewProps {
 
 export default function ReportView({ report, simulationId }: ReportViewProps) {
   const { meta, visualizations, insights, recommendations } = report;
+  const branchTree = visualizations.branchTree;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-800">
@@ -30,7 +32,20 @@ export default function ReportView({ report, simulationId }: ReportViewProps) {
       <main className="mx-auto max-w-6xl px-4 py-8">
         {/* Meta Info */}
         <div className="mb-8 rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800/50">
-          <h1 className="mb-4 text-2xl font-bold text-zinc-900 dark:text-zinc-100">{meta.sceneName}</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{meta.sceneName}</h1>
+            <div className="flex gap-2">
+              <button className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800">
+                📤 分享
+              </button>
+              <Link
+                href="/simulation"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+              >
+                🔄 再来一次
+              </Link>
+            </div>
+          </div>
           <div className="flex flex-wrap gap-4">
             <div className="flex items-center gap-2 rounded-lg bg-zinc-100 px-4 py-2 dark:bg-zinc-700">
               <span className="text-2xl">⏱️</span>
@@ -61,6 +76,29 @@ export default function ReportView({ report, simulationId }: ReportViewProps) {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Life Graph */}
+        <div className="mb-8 rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800/50">
+          <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            🌳 人生图谱
+          </h2>
+          <LifeGraph
+            branches={branchTree.branches.map((b) => ({
+              id: b.id,
+              parentId: b.parentId,
+              label: b.label || '初始分支',
+              decisionQuestion: b.decisionQuestion,
+              chosenOption: b.chosenOption,
+              outcome: b.outcome,
+              eventCount: b.eventCount,
+              stats: {
+                finalHappiness: b.stats?.finalHappiness,
+                finalCharacter: b.stats?.finalCharacter,
+              },
+            }))}
+            rootId={branchTree.rootId}
+          />
         </div>
 
         {/* Main Grid */}
